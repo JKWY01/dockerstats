@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name "JKWY01"
           git config user.email "71512658+JKWY01@users.noreply.github.com"
-          git add data/docker.json
+          git add data/docker-hub.json
           if git diff --cached --quiet; then
             echo "no data change, nothing to push"
             exit 0
