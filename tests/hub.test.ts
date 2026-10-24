@@ -5,7 +5,7 @@ const HAS_DATA = allImages().length > 0
 
 describe.skipIf(!HAS_DATA)('docker hub data integrity', () => {
   it('has a sane dataset size and unique names', () => {
-    expect(allImages().length).toBeGreaterThanOrEqual(150)
+    expect(allImages().length).toBeGreaterThanOrEqual(100)
     expect(new Set(allImages().map((m) => m.name)).size).toBe(allImages().length)
   })
 

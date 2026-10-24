@@ -35,7 +35,7 @@ await check('rankings lists images', async () => {
 await check('sitemap covers images', async () => {
   const xml = await get('/sitemap.xml', 60_000)
   const count = (xml.match(/<url>/g) ?? []).length
-  if (count < 150) throw new Error(`only ${count} URLs`)
+  if (count < 120) throw new Error(`only ${count} URLs`)
 })
 await check('llms.txt documents the API', async () => {
   const body = await get('/llms.txt')

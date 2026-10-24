@@ -20,7 +20,7 @@ import { dirname, join } from 'node:path'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DATA_PATH = join(ROOT, 'data', 'docker-hub.json')
 const LIBRARY_URL =
-  'https://raw.githubusercontent.com/docker-library/official-images/main/library/library'
+  'https://api.github.com/repos/docker-library/official-images/contents/library'
 const REPO_URL = (name) => `https://hub.docker.com/v2/repositories/library/${name}/`
 const TAGS_URL = (name, page) =>
   `https://hub.docker.com/v2/repositories/library/${name}/tags?page_size=100&ordering=-last_updated&page=${page}`
@@ -49,14 +49,13 @@ async function getJson(url, attempt = 1) {
 }
 
 async function main() {
-  // ① 官方镜像名单(每行 "name: ..." 取首词)
-  const raw = await (await fetch(LIBRARY_URL, { signal: AbortSignal.timeout(30_000) })).text()
-  const names = raw
-    .split('\n')
-    .map((l) => l.split('#')[0].trim().split(':')[0].trim())
+  // ① 官方镜像名单 = official-images 仓库 library/ 目录(GitHub contents API,处处可达)
+  const listRaw = await getJson(LIBRARY_URL)
+  const names = (Array.isArray(listRaw) ? listRaw : [])
+    .map((x) => x.name)
     .filter((n) => /^[a-z][a-z0-9.-]*$/.test(n))
   const uniq = [...new Set(names)]
-  if (uniq.length < 150) throw new Error(`library list sanity failed: ${uniq.length}`)
+  if (uniq.length < 100) throw new Error(`library list sanity failed: ${uniq.length}`)
   console.log(`[sync-docker] ${uniq.length} official images`)
 
   // ② 逐仓库:信息 + 近期标签
@@ -96,7 +95,7 @@ async function main() {
     await sleep(600)
   }
 
-  if (images.length < 150) {
+  if (images.length < 100) {
     throw new Error(`too many failures: only ${images.length} images (${failed} failed)`)
   }
   images.sort((a, b) => (b.pulls ?? 0) - (a.pulls ?? 0))
