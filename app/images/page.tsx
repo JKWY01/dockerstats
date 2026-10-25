@@ -4,6 +4,7 @@ import AdSlot from '@/components/AdSlot'
 import { breadcrumbLd } from '@/lib/jsonld'
 import { BASE, bigNum } from '@/lib/site'
 import { allImages, groupByLetter } from '@/lib/hub'
+import FilterBox from '@/components/FilterBox'
 
 export const revalidate = 86400
 
@@ -21,7 +22,7 @@ export default function ImagesPage() {
   ])
 
   return (
-    <div>
+    <div id="img-groups">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumb }} />
 
       <p className="text-[13px] font-semibold uppercase tracking-widest text-brand">Directory</p>
@@ -31,6 +32,8 @@ export default function ImagesPage() {
       <p className="mt-3 text-[15px] text-ink/65">Grouped by first letter, sorted by pulls within each group.</p>
 
       <AdSlot slot="images-top" />
+
+      <FilterBox targetId="img-groups" placeholder="Filter images…" />
 
       {groups.map((g) => (
         <section key={g.letter} className="mt-8">
